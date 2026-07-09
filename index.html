@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f5f2ec" />
+    <meta name="theme-color" content="#f7f7f5" />
     <title>共用记账</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
@@ -88,6 +88,7 @@
             <span id="payerStatsTotal">¥0.00</span>
           </div>
           <canvas id="payerChart" width="320" height="220"></canvas>
+          <div class="chart-legend" id="payerLegend"></div>
         </div>
 
         <div class="chart-card">
@@ -98,6 +99,10 @@
             </div>
           </div>
           <canvas id="categoryBarChart" width="360" height="300"></canvas>
+          <div class="chart-legend">
+            <span><i class="legend-dot legend-current"></i>本月</span>
+            <span><i class="legend-dot legend-previous"></i>对比月</span>
+          </div>
         </div>
         <div class="rank-list" id="rankList"></div>
       </section>
@@ -135,10 +140,32 @@
     </main>
 
     <nav class="tabbar" aria-label="底部导航">
-      <button class="tab active" data-target="add" type="button">记一笔</button>
-      <button class="tab" data-target="list" type="button">账单</button>
-      <button class="tab" data-target="stats" type="button">统计</button>
-      <button class="tab" data-target="settings" type="button">设置</button>
+      <button class="tab active" data-target="add" type="button" aria-label="记录">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+        <span>记录</span>
+      </button>
+      <button class="tab" data-target="list" type="button" aria-label="账单">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 7h10M7 12h10M7 17h6" />
+          <rect x="4" y="3" width="16" height="18" rx="4" />
+        </svg>
+        <span>账单</span>
+      </button>
+      <button class="tab" data-target="stats" type="button" aria-label="统计">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 19V9M12 19V5M19 19v-7" />
+        </svg>
+        <span>统计</span>
+      </button>
+      <button class="tab" data-target="settings" type="button" aria-label="设置">
+        <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3" />
+          <path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.4 1a7.4 7.4 0 0 0-2-1.1L14.2 3h-4.4l-.3 2.8a7.4 7.4 0 0 0-2 1.1l-2.4-1-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.4-1a7.4 7.4 0 0 0 2 1.1l.3 2.8h4.4l.3-2.8a7.4 7.4 0 0 0 2-1.1l2.4 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2Z" />
+        </svg>
+        <span>设置</span>
+      </button>
     </nav>
 
     <template id="emptyTemplate">

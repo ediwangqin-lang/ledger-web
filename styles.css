@@ -1,17 +1,15 @@
 :root {
   color-scheme: light;
-  --bg: #f5f2ec;
-  --panel: rgba(255, 250, 240, 0.78);
-  --text: #2c2925;
-  --muted: #776f66;
-  --line: rgba(255, 255, 255, 0.72);
-  --green: #8c7cf0;
-  --green-strong: #6758c8;
-  --gold: #f0a65a;
-  --red: #d96256;
-  --blue: #5b8def;
-  --shadow: 12px 16px 34px rgba(131, 113, 84, 0.18), -10px -10px 24px rgba(255, 255, 255, 0.78);
-  --inset: inset 5px 5px 12px rgba(133, 116, 91, 0.12), inset -6px -6px 14px rgba(255, 255, 255, 0.86);
+  --bg: #f7f7f5;
+  --panel: #ffffff;
+  --text: #000000;
+  --muted: #5f5f5f;
+  --line: #ffffff;
+  --accent: #000000;
+  --red: #000000;
+  --shadow: 12px 16px 34px rgba(0, 0, 0, 0.08), -12px -12px 26px rgba(255, 255, 255, 0.95);
+  --soft-shadow: 7px 9px 20px rgba(0, 0, 0, 0.06), -7px -7px 18px rgba(255, 255, 255, 0.98);
+  --inset: inset 6px 6px 14px rgba(0, 0, 0, 0.06), inset -7px -7px 16px rgba(255, 255, 255, 0.98);
 }
 
 * {
@@ -22,16 +20,13 @@ html,
 body {
   margin: 0;
   min-height: 100%;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(255, 208, 150, 0.38), transparent 34%),
-    radial-gradient(circle at 92% 10%, rgba(151, 172, 255, 0.34), transparent 32%),
-    linear-gradient(145deg, #f9f4eb 0%, var(--bg) 52%, #ece7dc 100%);
+  background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 body {
-  padding: max(18px, env(safe-area-inset-top)) 16px calc(86px + env(safe-area-inset-bottom));
+  padding: max(20px, env(safe-area-inset-top)) 18px calc(90px + env(safe-area-inset-bottom));
 }
 
 button,
@@ -51,7 +46,7 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 24px;
 }
 
 .kicker,
@@ -59,13 +54,18 @@ textarea {
   display: block;
   margin: 0 0 5px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 h1 {
   margin: 0;
-  font-size: 28px;
-  line-height: 1.15;
+  font-family: "Songti SC", "STSong", "Kaiti SC", "KaiTi", serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
   letter-spacing: 0;
 }
 
@@ -75,10 +75,10 @@ h1 {
   width: 44px;
   height: 44px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 999px;
   background: var(--panel);
-  color: var(--green-strong);
-  box-shadow: var(--shadow);
+  color: #000000;
+  box-shadow: var(--soft-shadow);
 }
 
 .icon-button span {
@@ -87,22 +87,26 @@ h1 {
 }
 
 .summary-panel {
-  display: grid;
+  display: none;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  padding: 18px;
+  gap: 10px;
+  padding: 20px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 28px;
   background: var(--panel);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  box-shadow: var(--inset);
+  backdrop-filter: blur(22px);
+}
+
+body[data-view="list"] .summary-panel {
+  display: grid;
 }
 
 .summary-panel strong {
   display: block;
   min-width: 0;
   overflow-wrap: anywhere;
-  font-size: 20px;
+  font-size: 18px;
   line-height: 1.15;
 }
 
@@ -112,9 +116,9 @@ h1 {
 
 .status-line {
   min-height: 24px;
-  margin: 12px 2px 10px;
+  margin: 0 4px 12px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .view {
@@ -131,23 +135,24 @@ h1 {
 .hint {
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 28px;
   background: var(--panel);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(18px);
+  box-shadow: var(--soft-shadow);
+  backdrop-filter: blur(22px);
 }
 
 .entry-form,
 .settings-form {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 label span {
   display: block;
   margin-bottom: 7px;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 input,
@@ -156,11 +161,11 @@ textarea {
   width: 100%;
   min-height: 46px;
   border: 1px solid var(--line);
-  border-radius: 14px;
-  background: rgba(255, 252, 245, 0.78);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.7);
   color: var(--text);
   outline: none;
-  padding: 0 12px;
+  padding: 0 14px;
   box-shadow: var(--inset);
 }
 
@@ -173,25 +178,25 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: rgba(140, 124, 240, 0.62);
-  box-shadow: 0 0 0 4px rgba(140, 124, 240, 0.16), var(--inset);
+  border-color: #000000;
+  box-shadow: 0 0 0 2px #000000, var(--inset);
 }
 
 .primary-button {
   min-height: 48px;
   border: 0;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #8c7cf0, #ffb169);
-  color: #fff;
+  border-radius: 999px;
+  background: #000000;
+  color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 14px 24px rgba(140, 124, 240, 0.26);
+  box-shadow: var(--soft-shadow);
 }
 
 .search-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 118px;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .bill-list,
@@ -206,11 +211,11 @@ textarea:focus {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
-  padding: 14px;
+  padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 24px;
   background: var(--panel);
-  box-shadow: 7px 9px 20px rgba(131, 113, 84, 0.12), -7px -7px 16px rgba(255, 255, 255, 0.75);
+  box-shadow: var(--soft-shadow);
 }
 
 .bill-main,
@@ -232,7 +237,7 @@ textarea:focus {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--green);
+  background: #000000;
 }
 
 .bill-note,
@@ -263,7 +268,7 @@ textarea:focus {
   justify-content: space-between;
   gap: 16px;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 #categoryChart {
@@ -284,6 +289,48 @@ textarea:focus {
   display: block;
 }
 
+.chart-legend {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.chart-legend span {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--soft-shadow);
+}
+
+.chart-legend strong,
+.chart-legend em {
+  font-style: normal;
+  font-weight: 800;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: #000000;
+}
+
+.legend-current {
+  background: #ff9b2f;
+}
+
+.legend-previous {
+  background: #d9d9d9;
+}
+
 .chart-card + .chart-card {
   margin-top: 12px;
 }
@@ -296,14 +343,15 @@ textarea:focus {
   height: 7px;
   margin-top: 9px;
   border-radius: 999px;
-  background: #eceae1;
+  background: #ededeb;
   overflow: hidden;
+  box-shadow: var(--inset);
 }
 
 .progress span {
   display: block;
   height: 100%;
-  background: var(--green);
+  background: #000000;
 }
 
 .hint {
@@ -326,9 +374,10 @@ textarea:focus {
 .empty-state {
   padding: 34px 16px;
   border: 1px dashed var(--line);
-  border-radius: 18px;
+  border-radius: 24px;
   color: var(--muted);
   text-align: center;
+  box-shadow: var(--inset);
 }
 
 .tabbar {
@@ -338,28 +387,48 @@ textarea:focus {
   z-index: 10;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  width: min(calc(100% - 24px), 520px);
+  gap: 0;
+  width: min(100%, 520px);
+  padding: 10px 18px 12px;
   transform: translateX(-50%);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  backdrop-filter: blur(16px);
+  border: 0;
+  background: #ffffff;
+  box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.04);
+  overflow: visible;
+  backdrop-filter: none;
 }
 
 .tab {
-  min-height: 54px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  min-height: 50px;
   border: 0;
+  border-radius: 0;
   background: transparent;
-  color: var(--muted);
+  color: #000000;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 11px;
+  box-shadow: none;
+  opacity: 0.42;
 }
 
 .tab.active {
-  color: var(--green-strong);
-  background: linear-gradient(135deg, rgba(140, 124, 240, 0.14), rgba(255, 177, 105, 0.18));
+  color: #000000;
+  background: transparent;
+  box-shadow: none;
+  opacity: 1;
+}
+
+.tab-icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 @media (max-width: 380px) {

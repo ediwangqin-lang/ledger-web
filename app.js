@@ -2,20 +2,25 @@ const STORAGE_KEY = "shared-ledger-expenses-v1";
 const SETTINGS_KEY = "shared-ledger-settings-v1";
 
 const categories = [
-  { name: "居住", color: "#8c7cf0" },
-  { name: "吃饭", color: "#f0a65a" },
-  { name: "交通", color: "#5b8def" },
-  { name: "日用品", color: "#65b68c" },
-  { name: "宠物", color: "#d982a6" },
-  { name: "医疗", color: "#e06f61" },
-  { name: "娱乐", color: "#57bfc4" },
-  { name: "其它", color: "#8b9099" },
+  { name: "居住", color: "#111111" },
+  { name: "吃饭", color: "#2f2f2f" },
+  { name: "交通", color: "#484848" },
+  { name: "日用品", color: "#626262" },
+  { name: "宠物", color: "#7a7a7a" },
+  { name: "医疗", color: "#949494" },
+  { name: "娱乐", color: "#adadad" },
+  { name: "其它", color: "#c8c8c8" },
 ];
 
 const payers = [
-  { name: "小王", color: "#7b8cff" },
-  { name: "小陈", color: "#ffb169" },
+  { name: "小王", color: "#19c884" },
+  { name: "小陈", color: "#4f74ff" },
 ];
+
+const barColors = {
+  current: "#ff9b2f",
+  previous: "#d9d9d9",
+};
 
 const state = {
   expenses: [],
@@ -252,94 +257,115 @@ function renderStats() {
   }));
 
   drawPieChart($("#payerChart"), payerGrouped, total);
+  renderPayerLegend(payerGrouped, total);
   drawBarChart($("#categoryBarChart"), categoryGrouped);
-  renderRanks(payerGrouped, total);
+  $("#rankList").innerHTML = "";
 }
 
 function drawPieChart(canvas, grouped, total) {
-  const ctx = canvas.getContext("2d");
-  const width = canvas.width;
-  const height = canvas.height;
+  const { ctx, width, height } = prepareCanvas(canvas, 320, 220);
   ctx.clearRect(0, 0, width, height);
 
   if (!grouped.length) {
-    ctx.fillStyle = "#71716b";
-    ctx.font = "15px -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.fillStyle = "#000000";
+    ctx.font = "600 14px -apple-system, BlinkMacSystemFont, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("本月暂无数据", width / 2, height / 2);
     return;
   }
 
   let start = -Math.PI / 2;
-  const radius = 78;
-  const centerX = width / 2;
+  const radius = 72;
+  const centerX = 104;
   const centerY = 106;
 
   grouped.forEach((item) => {
     const angle = (item.total / total) * Math.PI * 2;
     ctx.beginPath();
-    ctx.moveTo(centerX, centerY);
-    ctx.arc(centerX, centerY, radius, start, start + angle);
-    ctx.closePath();
+    ctx.arc(centerX, centerY, radius, start + 0.02, start + angle - 0.02);
+    ctx.lineWidth = 34;
+    ctx.lineCap = "round";
+    ctx.shadowColor = item.color;
+    ctx.shadowBlur = 16;
     ctx.fillStyle = item.color;
-    ctx.fill();
+    ctx.strokeStyle = item.color;
+    ctx.stroke();
     start += angle;
   });
 
+  ctx.shadowBlur = 0;
   ctx.beginPath();
-  ctx.arc(centerX, centerY, 48, 0, Math.PI * 2);
-  ctx.fillStyle = "#fffaf0";
+  ctx.arc(centerX, centerY, 42, 0, Math.PI * 2);
+  ctx.fillStyle = "#ffffff";
   ctx.fill();
-  ctx.fillStyle = "#202124";
-  ctx.font = "700 20px -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.fillStyle = "#000000";
+  ctx.font = "800 22px -apple-system, BlinkMacSystemFont, sans-serif";
   ctx.textAlign = "center";
-  ctx.fillText(money(total), centerX, centerY + 7);
+  ctx.fillText(String(Math.round(total)), centerX, centerY + 8);
+}
+
+function renderPayerLegend(grouped, total) {
+  const legend = $("#payerLegend");
+  if (!legend) return;
+  const rows = payers.map((payer) => {
+    const matched = grouped.find((item) => item.name === payer.name);
+    const amount = matched ? matched.total : 0;
+    const percent = total ? Math.round((amount / total) * 100) : 0;
+    return `
+      <span>
+        <i class="legend-dot" style="background:${payer.color}"></i>
+        ${payer.name}
+        <strong>${money(amount)}</strong>
+        <em>${percent}%</em>
+      </span>
+    `;
+  });
+  legend.innerHTML = rows.join("");
 }
 
 function drawBarChart(canvas, grouped) {
-  const ctx = canvas.getContext("2d");
-  const width = canvas.width;
-  const height = canvas.height;
-  const padding = { top: 24, right: 18, bottom: 72, left: 42 };
+  const { ctx, width, height } = prepareCanvas(canvas, 360, 300);
+  const padding = { top: 28, right: 14, bottom: 52, left: 34 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
   const maxValue = Math.max(1, ...grouped.flatMap((item) => [item.current, item.previous]));
+  const step = niceStep(maxValue);
+  const axisMax = Math.max(step, Math.ceil(maxValue / step) * step);
   const slot = chartWidth / grouped.length;
-  const barWidth = Math.min(14, slot / 3.4);
+  const barWidth = Math.min(10, slot / 4);
 
   ctx.clearRect(0, 0, width, height);
-  ctx.strokeStyle = "rgba(116, 105, 91, 0.16)";
+  ctx.strokeStyle = "#e4e4e4";
   ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(padding.left, padding.top);
-  ctx.lineTo(padding.left, padding.top + chartHeight);
-  ctx.lineTo(width - padding.right, padding.top + chartHeight);
-  ctx.stroke();
+  ctx.fillStyle = "#000000";
+  ctx.font = "600 11px -apple-system, BlinkMacSystemFont, sans-serif";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+
+  for (let value = 0; value <= axisMax; value += step) {
+    const y = padding.top + chartHeight - (value / axisMax) * chartHeight;
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(width - padding.right, y);
+    ctx.stroke();
+    ctx.fillText(String(Math.round(value)), padding.left - 8, y);
+  }
 
   grouped.forEach((item, index) => {
     const centerX = padding.left + slot * index + slot / 2;
     const baseY = padding.top + chartHeight;
-    const previousHeight = (item.previous / maxValue) * chartHeight;
-    const currentHeight = (item.current / maxValue) * chartHeight;
+    const previousHeight = (item.previous / axisMax) * chartHeight;
+    const currentHeight = (item.current / axisMax) * chartHeight;
 
-    roundedBar(ctx, centerX - barWidth - 2, baseY - previousHeight, barWidth, previousHeight, 6, "rgba(139, 144, 153, 0.48)");
-    roundedBar(ctx, centerX + 2, baseY - currentHeight, barWidth, currentHeight, 6, item.color);
+    roundedBar(ctx, centerX - barWidth - 2, baseY - previousHeight, barWidth, previousHeight, 6, barColors.previous);
+    roundedBar(ctx, centerX + 2, baseY - currentHeight, barWidth, currentHeight, 6, barColors.current);
 
-    ctx.save();
-    ctx.translate(centerX, height - 16);
-    ctx.rotate(-Math.PI / 5);
-    ctx.fillStyle = "#716a62";
-    ctx.font = "11px -apple-system, BlinkMacSystemFont, sans-serif";
-    ctx.textAlign = "right";
-    ctx.fillText(item.name, 0, 0);
-    ctx.restore();
+    ctx.fillStyle = "#000000";
+    ctx.font = "600 10px -apple-system, BlinkMacSystemFont, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.fillText(item.name, centerX, baseY + 12);
   });
-
-  ctx.fillStyle = "#716a62";
-  ctx.font = "12px -apple-system, BlinkMacSystemFont, sans-serif";
-  ctx.fillText("灰色上月", padding.left, 14);
-  ctx.fillStyle = "#8c7cf0";
-  ctx.fillText("彩色本月", padding.left + 70, 14);
 }
 
 function roundedBar(ctx, x, y, width, height, radius, color) {
@@ -355,6 +381,30 @@ function roundedBar(ctx, x, y, width, height, radius, color) {
   ctx.lineTo(x + width, y + height);
   ctx.closePath();
   ctx.fill();
+}
+
+function prepareCanvas(canvas, fallbackWidth, fallbackHeight) {
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.round(rect.width || fallbackWidth);
+  const height = Math.round(rect.height || fallbackHeight);
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = Math.round(width * ratio);
+  canvas.height = Math.round(height * ratio);
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  return { ctx, width, height };
+}
+
+function niceStep(maxValue) {
+  const rough = maxValue / 4;
+  const power = 10 ** Math.floor(Math.log10(rough || 1));
+  const normalized = rough / power;
+  if (normalized <= 1) return power;
+  if (normalized <= 2) return 2 * power;
+  if (normalized <= 5) return 5 * power;
+  return 10 * power;
 }
 
 function renderRanks(grouped, total) {
@@ -404,6 +454,7 @@ function bindEvents() {
     const button = event.target.closest(".tab");
     if (!button) return;
     state.activeView = button.dataset.target;
+    document.body.dataset.view = state.activeView;
     document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab === button));
     document.querySelectorAll(".view").forEach((view) => view.classList.toggle("active", view.dataset.view === state.activeView));
     render();
@@ -501,6 +552,7 @@ function init() {
   renderCategoryOptions();
   renderSettings();
   $("#date").value = today();
+  document.body.dataset.view = state.activeView;
   bindEvents();
   render();
   updateStatus(cloudReady() ? "可同步" : "本地模式：在设置中填写 Supabase 后可同步");
