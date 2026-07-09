@@ -92,13 +92,16 @@ function supabaseEndpoint() {
 }
 
 async function cloudRequest(url, options = {}) {
+  const key = state.settings.supabaseKey;
   const headers = {
-    apikey: state.settings.supabaseKey,
-    Authorization: `Bearer ${state.settings.supabaseKey}`,
+    apikey: key,
     "Content-Type": "application/json",
     Prefer: "return=representation",
     ...(options.headers || {}),
   };
+  if (key.split(".").length === 3) {
+    headers.Authorization = `Bearer ${key}`;
+  }
   const response = await fetch(url, { ...options, headers });
   if (!response.ok) throw new Error(await response.text());
   if (response.status === 204) return [];
