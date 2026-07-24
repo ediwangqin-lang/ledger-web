@@ -1,6 +1,12 @@
 const STORAGE_KEY = "shared-ledger-expenses-v1";
 const SETTINGS_KEY = "shared-ledger-settings-v1";
 
+const DEFAULT_CLOUD_SETTINGS = {
+  groupId: "home-ledger",
+  supabaseUrl: "https://vzznifdzunnndkfhwhgu.supabase.co",
+  supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ6em5pZmR6dW5ubmRrZmh3aGd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1NDIxNTUsImV4cCI6MjA5OTExODE1NX0.ggQ_w5lsCy5dIGdQKT-ztRHfzfvOSXVG1B-93GwFGlg",
+};
+
 const categories = [
   { name: "居住", color: "#111111" },
   { name: "吃饭", color: "#2f2f2f" },
@@ -72,7 +78,17 @@ function getPayer(name) {
 
 function loadLocal() {
   state.expenses = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  state.settings = { ...state.settings, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") };
+  const savedSettings = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+  state.settings = { ...state.settings, ...DEFAULT_CLOUD_SETTINGS, ...savedSettings };
+  if (!state.settings.supabaseUrl && DEFAULT_CLOUD_SETTINGS.supabaseUrl) {
+    state.settings.supabaseUrl = DEFAULT_CLOUD_SETTINGS.supabaseUrl;
+  }
+  if (!state.settings.supabaseKey && DEFAULT_CLOUD_SETTINGS.supabaseKey) {
+    state.settings.supabaseKey = DEFAULT_CLOUD_SETTINGS.supabaseKey;
+  }
+  if (!state.settings.groupId && DEFAULT_CLOUD_SETTINGS.groupId) {
+    state.settings.groupId = DEFAULT_CLOUD_SETTINGS.groupId;
+  }
 }
 
 function saveLocal() {
